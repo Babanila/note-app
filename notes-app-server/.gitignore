@@ -2,7 +2,6 @@
 
 # dependencies
 node_modules
-*/node_modules
 /.pnp
 .pnp.js
 
@@ -12,11 +11,10 @@ node_modules
 # production
 /build
 dist
-*/dist
 
 # misc
 .DS_Store
-*.env
+.env
 .env.local
 .env.development.local
 .env.test.local
