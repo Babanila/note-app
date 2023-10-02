@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 
 type Note = {
@@ -7,24 +7,26 @@ type Note = {
   content: string;
 };
 
-const sampleNote = [
-  {
-    id: 1,
-    title: "Test Note 1",
-    content: "bla bla note1",
-  },
-  {
-    id: 2,
-    title: "Test Note 2 ",
-    content: "bla bla note2",
-  },
-];
-
 function App() {
-  const [notes, setNotes] = useState<Note[]>(sampleNote);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/notes");
+        const notes: Note[] = await response.json();
+
+        setNotes(notes);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    fetchNotes();
+  },[]);
 
   const handleAddNote = (event: React.FormEvent) => {
     event.preventDefault();
