@@ -53,10 +53,10 @@ function App() {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/notes");
-        const notes: Note[] = await response.json();
-
-        setNotes(notes);
+        const response: Note[] = await dynamicFetch({
+          baseUrl: "http://localhost:8000/api/notes",
+        });
+        setNotes(response);
       } catch (e) {
         console.log(e);
       }
@@ -68,13 +68,12 @@ function App() {
   const handleAddNote = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await fetch("http://localhost:8000/api/notes", {
+      const newNote: Note = await dynamicFetch({
+        baseUrl: "http://localhost:8000/api/notes",
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content }),
+        data: { title, content },
       });
 
-      const newNote: Note = await response.json();
       setNotes([...notes, newNote]);
       setTitle("");
       setContent("");
@@ -87,11 +86,15 @@ function App() {
     event.stopPropagation();
 
     try {
-      await fetch(`http://localhost:8000/api/notes/${noteId}`, {
+      await dynamicFetch({
+        baseUrl: "http://localhost:8000/api/notes",
         method: "DELETE",
+        id: noteId,
       });
 
-      const updatedNotes: Note[] | [] = notes.filter((note) => note.id !== noteId);
+      const updatedNotes: Note[] | [] = notes.filter(
+        (note) => note.id !== noteId
+      );
       setNotes(updatedNotes);
     } catch (e) {
       console.log(e);
@@ -112,16 +115,13 @@ function App() {
     if (!selectedNote) return;
 
     try {
-      const response = await fetch(
-        `http://localhost:8000/api/notes/${selectedNote.id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, content }),
-        }
-      );
+      const updatedNote: Note = await dynamicFetch({
+        baseUrl: "http://localhost:8000/api/notes",
+        method: "PUT",
+        data: { title, content },
+        id: selectedNote.id,
+      });
 
-      const updatedNote: Note = await response.json();
       const updatedNotesList = notes.map((note) =>
         note.id === selectedNote.id ? updatedNote : note
       );
