@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -19,5 +19,7 @@ app.get("/api/notes", async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`⚡️⚡️⚡️[server]: Server is running at http://localhost:${port}`);
+  console.log(
+    `⚡️⚡️⚡️[server]: Server is running at http://localhost:${port}`
+  );
 });

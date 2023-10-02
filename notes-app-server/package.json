@@ -2,7 +2,7 @@
   "name": "notes-app-server",
   "version": "1.0.0",
   "description": "Backend for the notes app",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "lint": "npx eslint . --ext .ts",
     "build": "npx tsc",
