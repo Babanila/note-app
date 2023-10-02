@@ -38,13 +38,13 @@ const dynamicFetch = async ({
       body: inputData,
     });
 
-    if(method !== "DELETE") {
+    if (method !== "DELETE") {
       return await response.json();
     }
 
     return response;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 
@@ -56,12 +56,8 @@ function App() {
 
   useEffect(() => {
     const fetchNotes = async () => {
-      try {
-        const response: Note[] = await dynamicFetch({});
-        setNotes(response);
-      } catch (e) {
-        console.log(e);
-      }
+      const response: Note[] = await dynamicFetch({});
+      setNotes(response);
     };
 
     fetchNotes();
@@ -69,33 +65,24 @@ function App() {
 
   const handleAddNote = async (event: React.FormEvent) => {
     event.preventDefault();
-    try {
-      const newNote: Note = await dynamicFetch({
-        method: "POST",
-        data: { title, content },
-      });
+    const newNote: Note = await dynamicFetch({
+      method: "POST",
+      data: { title, content },
+    });
 
-      setNotes([...notes, newNote]);
-      setTitle("");
-      setContent("");
-    } catch (e) {
-      console.log(e);
-    }
+    setNotes([...notes, newNote]);
+    setTitle("");
+    setContent("");
   };
 
   const handleDeleteNote = async (event: React.MouseEvent, noteId: number) => {
     event.stopPropagation();
 
-    try {
-      await dynamicFetch({ method: "DELETE", id: noteId });
-
-      const updatedNotes: Note[] | [] = notes.filter(
-        (note) => note.id !== noteId
-      );
-      setNotes(updatedNotes);
-    } catch (e) {
-      console.log(e);
-    }
+    await dynamicFetch({ method: "DELETE", id: noteId });
+    const updatedNotes: Note[] | [] = notes.filter(
+      (note) => note.id !== noteId
+    );
+    setNotes(updatedNotes);
   };
 
   const handleNoteClick = useCallback(
@@ -111,24 +98,20 @@ function App() {
     event.preventDefault();
     if (!selectedNote) return;
 
-    try {
-      const updatedNote: Note = await dynamicFetch({
-        method: "PUT",
-        data: { title, content },
-        id: selectedNote.id,
-      });
+    const updatedNote: Note = await dynamicFetch({
+      method: "PUT",
+      data: { title, content },
+      id: selectedNote.id,
+    });
 
-      const updatedNotesList = notes.map((note) =>
-        note.id === selectedNote.id ? updatedNote : note
-      );
+    const updatedNotesList = notes.map((note) =>
+      note.id === selectedNote.id ? updatedNote : note
+    );
 
-      setNotes(updatedNotesList);
-      setTitle("");
-      setContent("");
-      setSelectedNote(null);
-    } catch (e) {
-      console.log(e);
-    }
+    setNotes(updatedNotesList);
+    setTitle("");
+    setContent("");
+    setSelectedNote(null);
   };
 
   const handleCancel = useCallback(() => {
