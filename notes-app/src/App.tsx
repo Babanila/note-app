@@ -40,16 +40,21 @@ function App() {
     setContent("");
   };
 
-  const handleRemoveNote = (receiveId: number) => {
-    const filteredNotes = notes.filter((note) => note.id !== receiveId);
-    setNotes(filteredNotes);
+  const handleDeleteNote = (event: React.MouseEvent, noteId: number) => {
+    event.stopPropagation();
+    const updatedNotes = notes.filter((note) => note.id !== noteId);
+
+    setNotes(updatedNotes);
   };
 
-  const handleNoteClick = useCallback((note: Note) => {
-    setSelectedNote(note);
-    setTitle(note.title);
-    setContent(note.content);
-  }, [setTitle, setContent, setSelectedNote]);
+  const handleNoteClick = useCallback(
+    (note: Note) => {
+      setSelectedNote(note);
+      setTitle(note.title);
+      setContent(note.content);
+    },
+    [setTitle, setContent, setSelectedNote]
+  );
 
   const handleUpdateNote = (event: React.FormEvent) => {
     event.preventDefault();
@@ -117,7 +122,9 @@ function App() {
         {notes.map((note) => (
           <div className="note-item" onClick={() => handleNoteClick(note)}>
             <div className="notes-header">
-              <button onClick={() => handleRemoveNote(note.id)}>x</button>
+              <button onClick={(event) => handleDeleteNote(event, note.id)}>
+                x
+              </button>
             </div>
             <h2>{note.title}</h2>
             <p>{note.content}</p>
