@@ -8,14 +8,14 @@ type Note = {
 };
 
 type FetchType = {
-  baseUrl: string;
+  baseUrl?: string;
   method?: string;
   data?: Record<string, any>;
   id?: number;
 };
 
 const dynamicFetch = async ({
-  baseUrl,
+  baseUrl = "http://localhost:8000/api/notes",
   method = "GET",
   data,
   id,
@@ -38,7 +38,11 @@ const dynamicFetch = async ({
       body: inputData,
     });
 
-    return await response.json();
+    if(method !== "DELETE") {
+      return await response.json();
+    }
+
+    return response;
   } catch (e) {
     console.log(e);
   }
@@ -53,9 +57,7 @@ function App() {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const response: Note[] = await dynamicFetch({
-          baseUrl: "http://localhost:8000/api/notes",
-        });
+        const response: Note[] = await dynamicFetch({});
         setNotes(response);
       } catch (e) {
         console.log(e);
@@ -69,7 +71,6 @@ function App() {
     event.preventDefault();
     try {
       const newNote: Note = await dynamicFetch({
-        baseUrl: "http://localhost:8000/api/notes",
         method: "POST",
         data: { title, content },
       });
@@ -86,11 +87,7 @@ function App() {
     event.stopPropagation();
 
     try {
-      await dynamicFetch({
-        baseUrl: "http://localhost:8000/api/notes",
-        method: "DELETE",
-        id: noteId,
-      });
+      await dynamicFetch({ method: "DELETE", id: noteId });
 
       const updatedNotes: Note[] | [] = notes.filter(
         (note) => note.id !== noteId
@@ -116,7 +113,6 @@ function App() {
 
     try {
       const updatedNote: Note = await dynamicFetch({
-        baseUrl: "http://localhost:8000/api/notes",
         method: "PUT",
         data: { title, content },
         id: selectedNote.id,
