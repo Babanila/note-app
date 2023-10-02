@@ -28,22 +28,13 @@ const sampleNote = [
     title: "Test Note 4 ",
     content: "bla bla note4",
   },
-  {
-    id: 5,
-    title: "Test Note 5",
-    content: "bla bla note5",
-  },
-  {
-    id: 6,
-    title: "Test Note 6",
-    content: "bla bla note6",
-  },
 ];
 
 function App() {
   const [notes, setNotes] = useState<Note[]>(sampleNote);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
   const handleAddNote = (event: React.FormEvent) => {
     event.preventDefault();
@@ -60,13 +51,53 @@ function App() {
   };
 
   const handleRemoveNote = (receiveId: number) => {
-    const filteredNotes = notes.filter(note => note.id !== receiveId);
+    const filteredNotes = notes.filter((note) => note.id !== receiveId);
     setNotes(filteredNotes);
+  };
+
+  const handleNoteClick = (note: Note) => {
+    setSelectedNote(note);
+    setTitle(note.title);
+    setContent(note.content);
+  };
+
+  const handleUpdateNote = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!selectedNote) {
+      return;
+    }
+
+    const updatedNote: Note = {
+      id: selectedNote.id,
+      title: title,
+      content: content,
+    };
+
+    const updatedNotesList = notes.map((note) =>
+      note.id === selectedNote.id ? updatedNote : note
+    );
+
+    setNotes(updatedNotesList);
+    setTitle("");
+    setContent("");
+    setSelectedNote(null);
+  };
+
+  const handleCancel = () => {
+    setTitle("");
+    setContent("");
+    setSelectedNote(null);
   };
 
   return (
     <div className="app-container">
-      <form className="note-form" onSubmit={handleAddNote}>
+      <form
+        className="note-form"
+        onSubmit={(event) =>
+          selectedNote ? handleUpdateNote(event) : handleAddNote(event)
+        }
+      >
         <input
           value={title}
           onChange={(event) => setTitle(event.target.value)}
@@ -82,17 +113,24 @@ function App() {
           required
         ></textarea>
 
-        <button type="submit">Add Note</button>
+        {selectedNote ? (
+          <div className="edit-buttons">
+            <button type="submit">Save</button>
+            <button onClick={handleCancel}>Cancel</button>
+          </div>
+        ) : (
+          <button type="submit">Add Note</button>
+        )}
       </form>
 
       <div className="notes-grid">
-        {notes.map(({ id, title, content }) => (
-          <div className="note-item">
+        {notes.map((note) => (
+          <div className="note-item" onClick={() => handleNoteClick(note)}>
             <div className="notes-header">
-              <button onClick={() => handleRemoveNote(id)}>x</button>
+              <button onClick={() => handleRemoveNote(note.id)}>x</button>
             </div>
-            <h2>{title}</h2>
-            <p>{content}</p>
+            <h2>{note.title}</h2>
+            <p>{note.content}</p>
           </div>
         ))}
       </div>
