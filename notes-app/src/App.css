@@ -5,6 +5,7 @@ body {
 
 .app-container {
   grid-template-columns: 1fr;
+  position: relative;
 }
 
 @media (min-width: 600px) {
@@ -90,5 +91,38 @@ input {
 
 .edit-buttons button:last-of-type {
   background-color: rgb(220, 89, 89);
+  color: white;
+}
+
+.error-container {
+  height: 3rem;
+  width: 50%;
+  color: red;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border: 2px solid white;
+  border-radius: 6px;
+  position: absolute;
+  top: 50%;
+  left: 25%;
+}
+
+.close-button {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 10px;
+  border: 2px solid red;
+  border-radius: 6px;
+  background-color: white;
+  color: red;
+  font-size: 1rem;
+}
+
+.close-button:hover {
+  cursor: pointer;
+  background-color: red;
   color: white;
 }

@@ -1,3 +1,4 @@
+import type { FormEvent, ReactNode } from "react";
 import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 
@@ -12,6 +13,7 @@ type FetchType = {
   method?: string;
   data?: Record<string, any>;
   id?: number;
+  errorHandler: ((input: boolean) => void | undefined) | undefined;
 };
 
 const dynamicFetch = async ({
@@ -19,6 +21,7 @@ const dynamicFetch = async ({
   method = "GET",
   data,
   id,
+  errorHandler,
 }: FetchType) => {
   let url = baseUrl;
   let inputData = null;
@@ -45,6 +48,10 @@ const dynamicFetch = async ({
     return response;
   } catch (e) {
     console.error(e);
+
+    if (e && errorHandler) {
+      errorHandler(true);
+    }
   }
 };
 
@@ -53,21 +60,23 @@ function App() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchNotes = async () => {
-      const response: Note[] = await dynamicFetch({});
+      const response: Note[] = await dynamicFetch({ errorHandler: setError });
       setNotes(response);
     };
 
     fetchNotes();
   }, []);
 
-  const handleAddNote = async (event: React.FormEvent) => {
+  const handleAddNote = async (event: FormEvent) => {
     event.preventDefault();
     const newNote: Note = await dynamicFetch({
       method: "POST",
       data: { title, content },
+      errorHandler: setError,
     });
 
     setNotes([...notes, newNote]);
@@ -78,7 +87,11 @@ function App() {
   const handleDeleteNote = async (event: React.MouseEvent, noteId: number) => {
     event.stopPropagation();
 
-    await dynamicFetch({ method: "DELETE", id: noteId });
+    await dynamicFetch({
+      method: "DELETE",
+      id: noteId,
+      errorHandler: setError,
+    });
     const updatedNotes: Note[] | [] = notes.filter(
       (note) => note.id !== noteId
     );
@@ -88,13 +101,13 @@ function App() {
   const handleNoteClick = useCallback(
     (note: Note) => {
       setSelectedNote(note);
-      setTitle(note.title);
-      setContent(note.content);
+      setTitle(note?.title);
+      setContent(note?.content);
     },
     [setTitle, setContent, setSelectedNote]
   );
 
-  const handleUpdateNote = async (event: React.FormEvent) => {
+  const handleUpdateNote = async (event: FormEvent) => {
     event.preventDefault();
     if (!selectedNote) return;
 
@@ -102,6 +115,7 @@ function App() {
       method: "PUT",
       data: { title, content },
       id: selectedNote.id,
+      errorHandler: setError,
     });
 
     const updatedNotesList = notes.map((note) =>
@@ -119,6 +133,14 @@ function App() {
     setContent("");
     setSelectedNote(null);
   }, [setTitle, setContent, setSelectedNote]);
+
+  const handleCloseError = useCallback(
+    (event: FormEvent) => {
+      event.preventDefault();
+      setError(false);
+    },
+    [setError]
+  );
 
   return (
     <div className="app-container">
@@ -154,18 +176,30 @@ function App() {
       </form>
 
       <div className="notes-grid">
-        {notes.map((note) => (
+        {notes?.map((note) => (
           <div className="note-item" onClick={() => handleNoteClick(note)}>
             <div className="notes-header">
-              <button onClick={(event) => handleDeleteNote(event, note.id)}>
+              <button onClick={(event) => handleDeleteNote(event, note?.id)}>
                 x
               </button>
             </div>
-            <h2>{note.title}</h2>
-            <p>{note.content}</p>
+            <h2>{note?.title}</h2>
+            <p>{note?.content}</p>
           </div>
         ))}
       </div>
+
+      {error && (
+        <div className="error-container">
+          <div className="error-text">Something went wrong!!!, please try again later</div>
+          <button
+            className="close-button"
+            onClick={(event) => handleCloseError(event)}
+          >
+            Close
+          </button>
+        </div>
+      )}
     </div>
   );
 }
