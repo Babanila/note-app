@@ -26,20 +26,24 @@ function App() {
     };
 
     fetchNotes();
-  },[]);
+  }, []);
 
-  const handleAddNote = (event: React.FormEvent) => {
+  const handleAddNote = async (event: React.FormEvent) => {
     event.preventDefault();
-    setNotes([
-      ...notes,
-      {
-        id: notes.length + 1,
-        title: title,
-        content: content,
-      },
-    ]);
-    setTitle("");
-    setContent("");
+    try {
+      const response = await fetch("http://localhost:8000/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content }),
+      });
+
+      const newNote = await response.json();
+      setNotes([...notes, newNote]);
+      setTitle("");
+      setContent("");
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleDeleteNote = (event: React.MouseEvent, noteId: number) => {
