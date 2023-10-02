@@ -59,6 +59,11 @@ function App() {
     setContent("");
   };
 
+  const handleRemoveNote = (receiveId: number) => {
+    const filteredNotes = notes.filter(note => note.id !== receiveId);
+    setNotes(filteredNotes);
+  };
+
   return (
     <div className="app-container">
       <form className="note-form" onSubmit={handleAddNote}>
@@ -81,13 +86,13 @@ function App() {
       </form>
 
       <div className="notes-grid">
-        {notes.map((note) => (
+        {notes.map(({ id, title, content }) => (
           <div className="note-item">
             <div className="notes-header">
-              <button>x</button>
+              <button onClick={() => handleRemoveNote(id)}>x</button>
             </div>
-            <h2>{note.title}</h2>
-            <p>{note.content}</p>
+            <h2>{title}</h2>
+            <p>{content}</p>
           </div>
         ))}
       </div>
