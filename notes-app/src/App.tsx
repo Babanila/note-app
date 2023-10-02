@@ -7,6 +7,43 @@ type Note = {
   content: string;
 };
 
+type FetchType = {
+  baseUrl: string;
+  method?: string;
+  data?: Record<string, any>;
+  id?: number;
+};
+
+const dynamicFetch = async ({
+  baseUrl,
+  method = "GET",
+  data,
+  id,
+}: FetchType) => {
+  let url = baseUrl;
+  let inputData = null;
+
+  if (id) {
+    url = `${baseUrl}/${id}`;
+  }
+
+  if (data) {
+    inputData = JSON.stringify(data);
+  }
+
+  try {
+    const response = await fetch(url, {
+      method: method,
+      headers: { "Content-Type": "application/json" },
+      body: inputData,
+    });
+
+    return await response.json();
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [title, setTitle] = useState("");
