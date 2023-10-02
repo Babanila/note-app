@@ -46,11 +46,19 @@ function App() {
     }
   };
 
-  const handleDeleteNote = (event: React.MouseEvent, noteId: number) => {
+  const handleDeleteNote = async (event: React.MouseEvent, noteId: number) => {
     event.stopPropagation();
-    const updatedNotes = notes.filter((note) => note.id !== noteId);
 
-    setNotes(updatedNotes);
+    try {
+      await fetch(`http://localhost:8000/api/notes/${noteId}`, {
+        method: "DELETE",
+      });
+
+      const updatedNotes = notes.filter((note) => note.id !== noteId);
+      setNotes(updatedNotes);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleNoteClick = useCallback(
