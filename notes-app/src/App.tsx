@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import "./App.css";
 
 type Note = {
@@ -17,16 +17,6 @@ const sampleNote = [
     id: 2,
     title: "Test Note 2 ",
     content: "bla bla note2",
-  },
-  {
-    id: 3,
-    title: "Test Note 3",
-    content: "bla bla note3",
-  },
-  {
-    id: 4,
-    title: "Test Note 4 ",
-    content: "bla bla note4",
   },
 ];
 
@@ -55,11 +45,11 @@ function App() {
     setNotes(filteredNotes);
   };
 
-  const handleNoteClick = (note: Note) => {
+  const handleNoteClick = useCallback((note: Note) => {
     setSelectedNote(note);
     setTitle(note.title);
     setContent(note.content);
-  };
+  }, [setTitle, setContent, setSelectedNote]);
 
   const handleUpdateNote = (event: React.FormEvent) => {
     event.preventDefault();
@@ -84,11 +74,11 @@ function App() {
     setSelectedNote(null);
   };
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setTitle("");
     setContent("");
     setSelectedNote(null);
-  };
+  }, [setTitle, setContent, setSelectedNote]);
 
   return (
     <div className="app-container">
