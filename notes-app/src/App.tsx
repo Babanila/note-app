@@ -37,7 +37,7 @@ function App() {
         body: JSON.stringify({ title, content }),
       });
 
-      const newNote = await response.json();
+      const newNote: Note = await response.json();
       setNotes([...notes, newNote]);
       setTitle("");
       setContent("");
@@ -54,7 +54,7 @@ function App() {
         method: "DELETE",
       });
 
-      const updatedNotes = notes.filter((note) => note.id !== noteId);
+      const updatedNotes: Note[] | [] = notes.filter((note) => note.id !== noteId);
       setNotes(updatedNotes);
     } catch (e) {
       console.log(e);
@@ -84,7 +84,7 @@ function App() {
         }
       );
 
-      const updatedNote = await response.json();
+      const updatedNote: Note = await response.json();
       const updatedNotesList = notes.map((note) =>
         note.id === selectedNote.id ? updatedNote : note
       );
