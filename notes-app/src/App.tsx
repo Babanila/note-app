@@ -42,12 +42,40 @@ const sampleNote = [
 
 function App() {
   const [notes, setNotes] = useState<Note[]>(sampleNote);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  const handleAddNote = (event: React.FormEvent) => {
+    event.preventDefault();
+    setNotes([
+      ...notes,
+      {
+        id: notes.length + 1,
+        title: title,
+        content: content,
+      },
+    ]);
+    setTitle("");
+    setContent("");
+  };
 
   return (
     <div className="app-container">
-      <form className="note-form">
-        <input placeholder="Title" required />
-        <textarea placeholder="Content" rows={10} required />
+      <form className="note-form" onSubmit={handleAddNote}>
+        <input
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          placeholder="Title"
+          required
+        ></input>
+
+        <textarea
+          value={content}
+          onChange={(event) => setContent(event.target.value)}
+          placeholder="Content"
+          rows={10}
+          required
+        ></textarea>
 
         <button type="submit">Add Note</button>
       </form>
